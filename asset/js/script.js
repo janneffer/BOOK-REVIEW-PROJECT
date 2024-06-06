@@ -4,7 +4,6 @@ window.addEventListener('scroll', function() {
     header.classList.toggle('sticky', window.scrollY > 0);
 });
 
-
 // ==================== NAVBAR - BURGER MENU ====================
 
 let burgermenu = document.querySelector('#burger-menu');
@@ -19,6 +18,8 @@ window.onscroll = () => {
     burgermenu.classList.remove('bx-x');
     navbar.classList.remove('active');
 }
+
+
 
 // ==================== SEARCH BOX - HOME SECTION ====================
 
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleClearIcon(); 
     });
 });
+
 
 // ==================== FILTER OPTIONS - BROWSE HTML ====================
 
@@ -64,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
 
 // ==================== STAR RATING - REVIEW HTML ====================
 
@@ -111,3 +112,67 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// ==================== LOGIN - REGISTER ====================
+document.addEventListener("DOMContentLoaded", function() {
+    const loginLink = document.getElementById("login-link");
+    const registerLink = document.getElementById("register-link");
+    const loginForm = document.querySelector(".form-box.login");
+    const registerForm = document.querySelector(".form-box.register");
+
+    // Sembunyikan form box register saat halaman dimuat
+    registerForm.style.display = "none";
+
+    // Tambahkan event listener pada link "Register" pada form box login
+    registerLink.addEventListener("click", function(event) {
+        event.preventDefault(); // Untuk mencegah perubahan URL saat link diklik
+        loginForm.style.display = "none"; // Sembunyikan form box login
+        registerForm.style.display = "block"; // Tampilkan form box register
+    });
+
+    // Tambahkan event listener pada link "Login" pada form box register (opsional)
+    loginLink.addEventListener("click", function(event) {
+        event.preventDefault(); // Untuk mencegah perubahan URL saat link diklik
+        registerForm.style.display = "none"; // Sembunyikan form box register
+        loginForm.style.display = "block"; // Tampilkan form box login
+    });
+});
+
+
+
+// ==================== MORE OPTIONS - REVIEW SECTION ====================
+document.addEventListener("DOMContentLoaded", function() {
+    const moreOptionsButtons = document.querySelectorAll('.more-options');
+    const moreOptionsPopups = document.querySelectorAll('.more-options-popup');
+
+    // Initialize the popups to be hidden
+    moreOptionsPopups.forEach(popup => {
+        popup.style.display = 'none';
+    });
+
+    moreOptionsButtons.forEach((button, index) => {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation(); // Stop the click event from propagating
+
+            const popup = moreOptionsPopups[index];
+            if (popup.style.display === 'none' || popup.style.display === '') {
+                popup.style.display = 'block';
+            } else {
+                popup.style.display = 'none';
+            }
+        });
+    });
+
+    // Close all popups when clicking outside
+    document.addEventListener('click', function() {
+        moreOptionsPopups.forEach(popup => {
+            popup.style.display = 'none';
+        });
+    });
+
+    // Prevent popup from closing when clicking inside
+    moreOptionsPopups.forEach(popup => {
+        popup.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    });
+});
