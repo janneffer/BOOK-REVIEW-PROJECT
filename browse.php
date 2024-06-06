@@ -20,7 +20,8 @@
         // Jika tidak ada input pencarian, tampilkan semua buku
         $sql = "SELECT b.*, a.author_name, CONCAT_WS(' ', b.desc_1, b.desc_2, b.desc_3) AS full_description
                 FROM books b
-                INNER JOIN authors a ON b.author_id = a.author_id";
+                INNER JOIN authors a ON b.author_id = a.author_id
+                ORDER BY b.title ASC";
         $result = $conn->query($sql);
     }
 ?>
@@ -45,7 +46,7 @@
                     <ul>
                         <?php
                             // Query untuk mengambil daftar genre dari database
-                            $genreSql = "SELECT * FROM genres";
+                            $genreSql = "SELECT * FROM genres ORDER BY genre_name ASC";
                             $genreResult = $conn->query($genreSql);
 
                             if ($genreResult->num_rows > 0) {
@@ -63,7 +64,7 @@
                     <ul>
                         <?php
                             // Query untuk mengambil daftar tahun dari data buku yang ada di database
-                            $yearSql = "SELECT DISTINCT YEAR(first_publish) AS year FROM books ORDER BY year DESC";
+                            $yearSql = "SELECT DISTINCT YEAR(first_publish) AS year FROM books ORDER BY year ASC";
                             $yearResult = $conn->query($yearSql);
 
                             if ($yearResult->num_rows > 0) {
