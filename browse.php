@@ -14,7 +14,8 @@
         $sql = "SELECT b.*, a.author_name, CONCAT_WS(' ', b.desc_1, b.desc_2, b.desc_3) AS full_description
                 FROM books b
                 INNER JOIN authors a ON b.author_id = a.author_id
-                WHERE LOWER(b.title) LIKE LOWER('%$search_query_safe%') OR LOWER(a.author_name) LIKE LOWER('%$search_query_safe%')";
+                WHERE LOWER(b.title) LIKE LOWER('%$search_query_safe%') OR LOWER(a.author_name) LIKE LOWER('%$search_query_safe%')
+                ORDER BY b.title ASC";
         $result = $conn->query($sql);
     } else {
         // Jika tidak ada input pencarian, tampilkan semua buku
