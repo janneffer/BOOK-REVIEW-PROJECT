@@ -16,11 +16,11 @@
 
 :root{
     /* ========== COLORS ========== */
-    --main-color: #E95E31;
+    /* --main-color: #E95E31;
     --second-color: #CFBEA3;
     --lightest-color: #fcfcfc;
     --grey-color: #dedcd7;
-    --border: 0.1rem solid rgba(113, 111, 109, 0.329);
+    --border: 0.1rem solid rgba(113, 111, 109, 0.329); */
 
     /* ========== TEXT ========== */
     --h1-font-size: 5rem;
@@ -33,7 +33,7 @@
 
 *::selection{
     color: white;
-    background: var(--main-color);
+    background: grey;
 }
 
 section {
@@ -275,7 +275,7 @@ header {
 
 /* ========== DEV TEAM CONTAINER ========== */
 .devteam {
-    background: #d3d0b1;
+    background: #ccc;
     min-height: 100vh;
 }
 
@@ -293,7 +293,7 @@ header {
 
 .devteam .devteam-container .box {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background: var(--lightest-color);
+    background: white;
     position: relative;
     overflow: hidden;
 }
@@ -321,7 +321,7 @@ header {
     width: 110%;
     height: 45%; /* Adjust the height of the slant */
     
-    background: var(--lightest-color);
+    background: white;
     transform: skewY(-15deg);
     transform-origin: bottom left;
 }
@@ -516,7 +516,7 @@ header {
     width: 100%;
     padding: 10px 30px;
     border-radius: 5px;
-    background-color: #d3d0b1;
+    background-color: #ccc;
 }
 
 .filters h3 {
@@ -870,10 +870,6 @@ header {
     margin-top: 1rem;
 }
 
-.thebook .b-container .content span {
-    color: grey;
-}
-
 .content .column {
     display: flex;
     flex-direction: column;
@@ -897,7 +893,23 @@ header {
     margin-top: 0;
 }
 
+.total-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: var(--h4-font-size);
+    color: gold;
+}
 
+.total-rating i {
+    font-size: var(--h4-font-size);
+}
+
+.total-rating span {
+    font-size: var(--h5-font-size);
+    color: grey;
+    margin-left: 0.5rem;
+}
 
 @media (max-width: 1110px) {
     .content .column .row h4 {
@@ -971,22 +983,24 @@ header {
 }
 
 .comments .write-box h4 {
-    font-size: 1.2rem; /* Sesuaikan ukuran font dengan kebutuhan */
+    font-size: 1.2rem;
     text-transform: uppercase;
 }
 
-.comments .write-box input[type="text"] {
+.comments .write-box textarea {
     width: 100%;
     padding: 10px 15px;
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+    resize: none;
+    min-height: 80px;
 }
 
-.comments .write-box .rating-and-submit {
+.rating-and-submit {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center; /* Center items vertically */
 }
 
 .rating-and-submit .star-rating {
@@ -995,15 +1009,15 @@ header {
 }
 
 .rating-and-submit .star-rating .star {
-    font-size: 1.5rem; /* Sesuaikan ukuran bintang dengan kebutuhan */
+    font-size: 1.5rem;
     cursor: pointer;
-    color: #ccc; /* Warna bintang default */
+    color: #ccc;
     transition: color 0.3s;
 }
 
 .rating-and-submit .star-rating .star:hover,
 .rating-and-submit .star-rating .star.selected {
-    color: gold; /* Warna bintang saat dihover atau terpilih */
+    color: gold;
 }
 
 .rating-and-submit .submit-btn {
