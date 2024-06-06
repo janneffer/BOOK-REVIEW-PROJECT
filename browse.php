@@ -11,7 +11,7 @@
         $search_query_safe = $conn->real_escape_string($search_query); // Membersihkan input
 
         // Query untuk mencari buku berdasarkan judul atau nama penulis yang cocok dengan input pencarian
-        $sql = "SELECT b.*, a.author_name, CONCAT_WS(' ', b.desc_1, b.desc_2, b.desc_3) AS full_description
+        $sql = "SELECT b.*, a.author_name, CONCAT_WS(' ', b.desc_1, b.desc_2, b.desc_3) AS short_description
                 FROM books b
                 INNER JOIN authors a ON b.author_id = a.author_id
                 WHERE LOWER(b.title) LIKE LOWER('%$search_query_safe%') OR LOWER(a.author_name) LIKE LOWER('%$search_query_safe%')
@@ -19,7 +19,7 @@
         $result = $conn->query($sql);
     } else {
         // Jika tidak ada input pencarian, tampilkan semua buku
-        $sql = "SELECT b.*, a.author_name, CONCAT_WS(' ', b.desc_1, b.desc_2, b.desc_3) AS full_description
+        $sql = "SELECT b.*, a.author_name, CONCAT_WS(' ', b.desc_1, b.desc_2, b.desc_3) AS short_description
                 FROM books b
                 INNER JOIN authors a ON b.author_id = a.author_id
                 ORDER BY b.title ASC";
@@ -95,7 +95,7 @@
                     echo "<div class='content'>";
                     echo "<h4>" . $bookRow['title'] . "</h4>";
                     echo "<h5>" . $bookRow['author_name'] . "</h5>";
-                    echo "<p>" . $bookRow['full_description'] . "</p>";
+                    echo "<p>" . $bookRow['short_description'] . "</p>";
                     echo "</div>";
                     echo "</a>";
                 }
