@@ -28,7 +28,7 @@
         <ul class="navbar">
             <li><a href="index.php#trending">Trending</a></li>
             <li><a href="browse.php#">Browse</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="index.php#devteam">Team</a></li>
         </ul>
         <div class="login-profile-container">
             <?php if (isset($_SESSION['user_id'])): ?>
