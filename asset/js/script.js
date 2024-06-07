@@ -38,32 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// ==================== FILTER OPTIONS - BROWSE HTML ====================
-
-document.addEventListener('DOMContentLoaded', function() {
-    const showButton = document.getElementById('show-button');
-    const filterOptions = document.querySelector('.filters .options');
-    const applyButton = document.querySelector('.filters .apply-button');
-
-    // Sembunyikan opsi filter dan tombol apply secara default
-    filterOptions.style.display = 'none';
-    applyButton.style.display = 'none';
-
-    showButton.addEventListener('click', function() {
-        if (filterOptions.style.display === 'none') {
-            // Jika opsi filter dan tombol apply sedang disembunyikan, tampilkan mereka
-            filterOptions.style.display = 'block';
-            applyButton.style.display = 'block';
-            showButton.innerHTML = "<i class='bx bx-chevron-up'></i>"; // Ganti ikon tombol show menjadi panah atas
-        } else {
-            // Jika opsi filter dan tombol apply sedang ditampilkan, sembunyikan mereka
-            filterOptions.style.display = 'none';
-            applyButton.style.display = 'none';
-            showButton.innerHTML = "<i class='bx bx-chevron-down'></i>"; // Ganti ikon tombol show menjadi panah bawah
-        }
-    });
-});
-
 // ==================== STAR RATING - REVIEW HTML ====================
 
 document.addEventListener('DOMContentLoaded', () => {
