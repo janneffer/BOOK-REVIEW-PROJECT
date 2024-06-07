@@ -37,38 +37,40 @@
 
     // Fungsi untuk menampilkan buku
     function displayBooks($result, $conn) {
-        if ($result->num_rows > 0) {
-            while($bookRow = $result->fetch_assoc()) {
-                echo "<a href='bookreview.html' class='books'>";
-                echo "<div class='image'>";
-                echo "<img src='" . $bookRow['cover_image'] . "' alt='Deskripsi gambar'>";
-                echo "</div>";
-                echo "<div class='content'>";
-                echo "<h4>" . $bookRow['title'] . "</h4>";
-                echo "<h5>" . $bookRow['author_name'] . "</h5>";
-                echo "<p>" . $bookRow['short_description'] . "</p>";
+    if ($result->num_rows > 0) {
+        while ($bookRow = $result->fetch_assoc()) {
+            $book_id = $bookRow['book_id'];
+            
+            echo "<a href='bookreview.php?book_id=" . $book_id . "' class='books'>";
+            echo "<div class='image'>";
+            echo "<img src='" . $bookRow['cover_image'] . "' alt='Deskripsi gambar'>";
+            echo "</div>";
+            echo "<div class='content'>";
+            echo "<h4>" . htmlspecialchars($bookRow['title']) . "</h4>";
+            echo "<h5>" . htmlspecialchars($bookRow['author_name']) . "</h5>";
+            echo "<p>" . $bookRow['short_description'] . "</p>";
 
-                // Ambil genre dari database
-                $book_id = $bookRow['book_id']; // Pastikan nama kolom sesuai dengan tabel Anda
-                $genre_query = "SELECT g.genre_name FROM genres g
-                                INNER JOIN book_genre bg ON g.genre_id = bg.genre_id
-                                WHERE bg.book_id = $book_id";
-                $genre_result = $conn->query($genre_query);
-                if ($genre_result->num_rows > 0) {
-                    echo "<h5>Genre: ";
-                    while($genreRow = $genre_result->fetch_assoc()) {
-                        echo $genreRow['genre_name'] . ", ";
-                    }
-                    echo "</h5>";
+            // Fetch genre from the database
+            $genre_query = "SELECT g.genre_name FROM genres g
+                            INNER JOIN book_genre bg ON g.genre_id = bg.genre_id
+                            WHERE bg.book_id = $book_id";
+            $genre_result = $conn->query($genre_query);
+            if ($genre_result->num_rows > 0) {
+                echo "<h5>Genre: ";
+                while ($genreRow = $genre_result->fetch_assoc()) {
+                    echo htmlspecialchars($genreRow['genre_name']) . ", ";
                 }
-
-                echo "</div>";
-                echo "</a>";
+                echo "</h5>";
             }
-        } else {
-            echo "Tidak ada hasil yang ditemukan.";
+
+            echo "</div>";
+            echo "</a>";
         }
+    } else {
+        echo "Tidak ada hasil yang ditemukan.";
     }
+}
+
 
     // Inisialisasi variabel pencarian
     $search_query = "";
