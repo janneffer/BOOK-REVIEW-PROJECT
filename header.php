@@ -31,7 +31,7 @@
                 <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="login-profile-container">
-                <a href="sign.html" class="btn-signing-container">
+                <a href="sign.php" class="btn-signing-container">
                     <button class="btn-signing">Login</button>
                 </a>
                 <div class="navbar-profile">
@@ -39,7 +39,7 @@
                         <img src="asset/picture/Catching_fire.jpeg" alt="Profile Picture" class="nav-profile-pic" id="profile-pic">
                     </div>
                     <div class="nav-profile-dropdown" id="nav-profile-dropdown">
-                        <a href="profil.html">Profile</a>
+                        <a href="profil.php">Profile</a>
                         <a href="#">Logout</a>
                     </div>
                 </div>
