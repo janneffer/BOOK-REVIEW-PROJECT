@@ -1,16 +1,11 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.html");
-    exit();
-}
-
+$isLoggedIn = isset($_SESSION['user_id']);
 include 'dbconn.php';
 include 'header.php';
 include 'sections/home.php';
 include 'sections/trending.php';
 include 'sections/devteam.php';
 include 'footer.php';
-
 $conn->close();
 ?>
