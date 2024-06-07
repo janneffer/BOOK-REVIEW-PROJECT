@@ -18,7 +18,7 @@
             while ($row = $result->fetch_assoc()) {
                 // Menampilkan konten untuk setiap buku yang sedang tren
                 echo '<div class="box">';
-                echo '<a href="bookreview.html">';
+                echo '<a href="bookreview.php?book_id=' . $row['book_id'] . '">';
                 echo '<div class="image">';
                 echo '<img src="' . $row['cover_image'] . '" alt="' . $row['title'] . '">';
                 echo '</div>';
@@ -29,7 +29,7 @@
                 if ($row['total_rating'] != null) {
                     echo '<h5>' . $row['total_rating'] . '<span>/5</span></h5>';
                 } else {
-                    // Jika peringkat tidak tersedia, Anda bisa menampilkan pesan default atau peringkat yang kosong
+                    // Jika peringkat tidak tersedia
                     echo '<h5>Not yet reviewed</h5>';
                 }
                 echo '</div>';
@@ -37,7 +37,7 @@
                 echo '</div>';
             }
         } else {
-            // Jika tidak ada data yang tersedia, Anda dapat menampilkan pesan kesalahan atau pesan kosong
+            // Jika tidak ada data yang tersedia
             echo '<p>No trending books available</p>';
         }
         ?>
