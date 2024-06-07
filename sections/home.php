@@ -4,7 +4,7 @@
     <div class="home-text">
         <h1>ReadRater</h1>
     </div>
-    <form action="browse.php" method="GET"> <!-- Tambahkan action dan method pada form -->
+    <form action="browse.php" method="GET">
         <div class="search">
             <i class='bx bx-search'></i>
             <i class='bx bx-x clear-icon'></i>
