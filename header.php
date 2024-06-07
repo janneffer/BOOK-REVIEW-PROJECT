@@ -34,7 +34,7 @@
             <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="navbar-profile">
                     <div class="nav-profile-link">
-                        <img src="asset/picture/Catching_fire.jpeg" alt="Profile Picture" class="nav-profile-pic" id="profile-pic">
+                        <img src="defaul_profile.png" alt="Profile Picture" class="nav-profile-pic" id="profile-pic">
                     </div>
                     <div class="nav-profile-dropdown" id="nav-profile-dropdown">
                         <a href="profil.php">Profile</a>

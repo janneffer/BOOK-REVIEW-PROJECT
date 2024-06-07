@@ -8,11 +8,11 @@ if (!isset($_SESSION['user_id'])) {
 include 'db_connect.php';
 
 $user_id = $_SESSION['user_id'];
-$sql = "SELECT first_name, last_name, email, profile_picture FROM users WHERE user_id = ?";
+$sql = "SELECT first_name, last_name, email FROM users WHERE user_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($first_name, $last_name, $email, $profile_picture);
+$stmt->bind_result($first_name, $last_name, $email);
 $stmt->fetch();
 $stmt->close();
 $conn->close();
@@ -68,14 +68,13 @@ $conn->close();
         </div>
 
         <div class="edit-box">
-            <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="photo-profile">
             <div class="profile-details">
                 <h2 class="user-name"><?php echo htmlspecialchars($first_name . ' ' . $last_name); ?></h2>
                 <p class="profil-email"><?php echo htmlspecialchars($email); ?></p>
             </div>
 
             <div class="edit-profile">
-                <form action="update_profile.php" method="POST" enctype="multipart/form-data">
+                <form action="update_profile.php" method="POST">
                     <div class="e-container">
                         <label>First Name</label>
                         <input type="text" name="first_name" value="<?php echo htmlspecialchars($first_name); ?>" required>
@@ -87,10 +86,6 @@ $conn->close();
                     <div class="e-container">
                         <label>Email</label>
                         <input type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required>
-                    </div>
-                    <div class="e-container">
-                        <label>Profile Picture</label>
-                        <input type="file" name="profile_picture">
                     </div>
                     <div class="e-container">
                         <label>Password</label>
