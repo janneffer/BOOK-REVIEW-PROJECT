@@ -4,7 +4,7 @@ include 'dbconn.php';
 include 'header.php';
 
 // Fetch book ID from query parameter
-$book_id = isset($_GET['book_id']) ? intval($_GET['book_id']) : 1; // Default to 1 if no book_id provided
+$book_id = isset($_GET['book_id']) ? intval($_GET['book_id']) : 1;
 
 // Fetch book details from the database
 $book_query = "SELECT books.title, authors.author_name, books.cover_image, books.first_publish, books.isbn, languages.language_name, books.pages, publishers.publisher_name, books.desc_1, books.desc_2, books.desc_3, books.desc_4, books.desc_5, GROUP_CONCAT(genres.genre_name SEPARATOR ', ') AS genre
@@ -14,10 +14,13 @@ $book_query = "SELECT books.title, authors.author_name, books.cover_image, books
                JOIN publishers ON books.publisher_id = publishers.publisher_id
                LEFT JOIN book_genre ON books.book_id = book_genre.book_id
                LEFT JOIN genres ON book_genre.genre_id = genres.genre_id
-               WHERE books.book_id = $book_id
+               WHERE books.book_id = ?
                GROUP BY books.book_id";
 
-$book_result = $conn->query($book_query);
+$book_stmt = $conn->prepare($book_query);
+$book_stmt->bind_param("i", $book_id);
+$book_stmt->execute();
+$book_result = $book_stmt->get_result();
 $book = $book_result->fetch_assoc();
 
 // Check if user is logged in
@@ -31,8 +34,11 @@ if (isset($_POST['submit_review'])) {
         $rating = $_POST['rating'];
 
         // Insert review into database
-        $insert_review_query = "INSERT INTO reviews (user_id, book_id, review_text, rating) VALUES ('$user_id', '$book_id', '$review_text', '$rating')";
-        $conn->query($insert_review_query);
+        $insert_review_query = "INSERT INTO reviews (user_id, book_id, review_text, rating) VALUES (?, ?, ?, ?)";
+        $insert_review_stmt = $conn->prepare($insert_review_query);
+        $insert_review_stmt->bind_param("iisi", $user_id, $book_id, $review_text, $rating);
+        $insert_review_stmt->execute();
+        $insert_review_stmt->close();
 
         // Redirect to prevent form resubmission on page refresh
         header("Location: {$_SERVER['REQUEST_URI']}");
@@ -41,13 +47,16 @@ if (isset($_POST['submit_review'])) {
 }
 
 // Fetch reviews for the book from the database
-$reviews_query = "SELECT users.first_name, users.last_name, reviews.review_text, reviews.rating, reviews.review_date
+$reviews_query = "SELECT users.user_id, users.first_name, users.last_name, reviews.review_id, reviews.review_text, reviews.rating, reviews.review_date
                   FROM reviews
                   JOIN users ON reviews.user_id = users.user_id
-                  WHERE reviews.book_id = $book_id";
-$reviews_result = $conn->query($reviews_query);
+                  WHERE reviews.book_id = ?";
+$reviews_stmt = $conn->prepare($reviews_query);
+$reviews_stmt->bind_param("i", $book_id);
+$reviews_stmt->execute();
+$reviews_result = $reviews_stmt->get_result();
 
-// Hitung total rating dan jumlah ulasan
+// Calculate total rating and number of reviews
 $total_rating = 0;
 $total_reviews = 0;
 $reviews = []; // Array to store reviews
@@ -57,16 +66,17 @@ while ($row = $reviews_result->fetch_assoc()) {
     $total_reviews++;
 }
 
-// Hitung rata-rata rating
+// Calculate average rating
 $average_rating = $total_reviews > 0 ? $total_rating / $total_reviews : 0;
 
-// Menampilkan bintang sesuai dengan rata-rata rating
+// Calculate star ratings
 $full_stars = floor($average_rating);
 $half_star = ceil($average_rating - $full_stars);
 $empty_stars = 5 - $full_stars - $half_star;
 
-// Memformat rata-rata rating menjadi satu desimal
+// Format average rating to one decimal place
 $formatted_rating = number_format($average_rating, 1);
+
 ?>
 
 <!-- ==================== THE BOOK SECTION ==================== -->
@@ -167,15 +177,23 @@ $formatted_rating = number_format($average_rating, 1);
         <div class="posted">
             <h4>Reviews (<?php echo count($reviews); ?>)</h4> <!-- Display the number of reviews -->
             <?php
-            // Display existing reviews
             if (count($reviews) > 0) {
                 foreach ($reviews as $row) {
                     ?>
                     <div class="review-box">
                         <div class="review-header">
                             <h5><?php echo htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?></h5>
-                            <p><?php echo date('d F Y', strtotime($row['review_date'])); ?></p>
-                        </div>                        
+                            <p>
+                                <?php echo date('d F Y', strtotime($row['review_date'])); ?>
+                                <?php if ($user_logged_in && $row['user_id'] == $_SESSION['user_id']) : ?>
+                                    <button class="more-options" id="more-options-<?php echo $row['review_id']; ?>">&#10247;</button> 
+                                <?php endif; ?>
+                            </p>
+                            <div class="more-options-popup" id="more-options-popup-<?php echo $row['review_id']; ?>">
+                                <a href="#">Edit</a>
+                                <a href="#">Delete</a>
+                            </div> 
+                        </div>        
                         <div class="star-rating">
                             <?php
                             $rating = $row['rating'];
@@ -210,10 +228,33 @@ $formatted_rating = number_format($average_rating, 1);
             ratingInput.value = value;
         });
     });
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+    var moreOptionsBtns = document.querySelectorAll(".more-options");
+
+    moreOptionsBtns.forEach(function(btn) {
+        btn.addEventListener("click", function(event) {
+            event.stopPropagation(); // Prevents the event from bubbling up
+            var reviewId = this.id.split('-')[2]; // Get the review ID from the button ID
+            var popup = document.getElementById('more-options-popup-' + reviewId);
+            togglePopup(popup);
+        });
+    });
+
+    // Function to toggle the visibility of the popup
+    function togglePopup(popup) {
+        var popups = document.querySelectorAll(".more-options-popup");
+        popups.forEach(function(popup) {
+            popup.style.display = 'none';
+        });
+        popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+    }
+    });
 </script>
 
 
 <?php
-include 'footer.php';
-$conn->close();
+    include 'footer.php';
+    $conn->close();
 ?>
