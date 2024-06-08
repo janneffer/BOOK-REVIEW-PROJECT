@@ -27,30 +27,29 @@ $book = $book_result->fetch_assoc();
 $user_logged_in = isset($_SESSION['user_id']);
 
 // Process review submission
-if (isset($_POST['submit_review'])) {
-    if ($user_logged_in) {
-        $user_id = $_SESSION['user_id'];
-        $review_text = $_POST['review_text'];
-        $rating = $_POST['rating'];
+if (isset($_POST['submit_review']) && $user_logged_in) {
+    $user_id = $_SESSION['user_id'];
+    $review_text = $_POST['review_text'];
+    $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 1;
 
-        // Insert review into database
-        $insert_review_query = "INSERT INTO reviews (user_id, book_id, review_text, rating) VALUES (?, ?, ?, ?)";
-        $insert_review_stmt = $conn->prepare($insert_review_query);
-        $insert_review_stmt->bind_param("iisi", $user_id, $book_id, $review_text, $rating);
-        $insert_review_stmt->execute();
-        $insert_review_stmt->close();
+    // Insert review into database
+    $insert_review_query = "INSERT INTO reviews (user_id, book_id, review_text, rating) VALUES (?, ?, ?, ?)";
+    $insert_review_stmt = $conn->prepare($insert_review_query);
+    $insert_review_stmt->bind_param("iisi", $user_id, $book_id, $review_text, $rating);
+    $insert_review_stmt->execute();
+    $insert_review_stmt->close();
 
-        // Redirect to prevent form resubmission on page refresh
-        header("Location: {$_SERVER['REQUEST_URI']}");
-        exit();
-    }
+    // Redirect to prevent form resubmission on page refresh
+    header("Location: {$_SERVER['REQUEST_URI']}");
+    exit();
 }
 
 // Fetch reviews for the book from the database
 $reviews_query = "SELECT users.user_id, users.first_name, users.last_name, reviews.review_id, reviews.review_text, reviews.rating, reviews.review_date
                   FROM reviews
                   JOIN users ON reviews.user_id = users.user_id
-                  WHERE reviews.book_id = ?";
+                  WHERE reviews.book_id = ?
+                  ORDER BY reviews.review_date DESC";
 $reviews_stmt = $conn->prepare($reviews_query);
 $reviews_stmt->bind_param("i", $book_id);
 $reviews_stmt->execute();
@@ -59,7 +58,7 @@ $reviews_result = $reviews_stmt->get_result();
 // Calculate total rating and number of reviews
 $total_rating = 0;
 $total_reviews = 0;
-$reviews = []; // Array to store reviews
+$reviews = [];
 while ($row = $reviews_result->fetch_assoc()) {
     $reviews[] = $row;
     $total_rating += $row['rating'];
@@ -68,29 +67,61 @@ while ($row = $reviews_result->fetch_assoc()) {
 
 // Calculate average rating
 $average_rating = $total_reviews > 0 ? $total_rating / $total_reviews : 0;
-
-// Calculate star ratings
-$full_stars = floor($average_rating);
-$half_star = ceil($average_rating - $full_stars);
-$empty_stars = 5 - $full_stars - $half_star;
-
-// Format average rating to one decimal place
 $formatted_rating = number_format($average_rating, 1);
 
+// Process update review
+if (isset($_POST['update_review']) && $user_logged_in) {
+    $user_id = $_SESSION['user_id'];
+    $review_id = isset($_POST['review_id']) ? intval($_POST['review_id']) : 0;
+    $edit_review_text = isset($_POST['edit_review_text']) ? $_POST['edit_review_text'] : '';
+    $edit_rating = isset($_POST['edit_rating']) ? intval($_POST['edit_rating']) : 1;
+
+    // Update review in database
+    $update_review_query = "UPDATE reviews SET review_text = ?, rating = ? WHERE review_id = ? AND user_id = ?";
+    $update_review_stmt = $conn->prepare($update_review_query);
+    $update_review_stmt->bind_param("siii", $edit_review_text, $edit_rating, $review_id, $user_id);
+    $update_review_stmt->execute();
+    $update_review_stmt->close();
+
+    // Redirect to prevent form resubmission on page refresh
+    header("Location: {$_SERVER['REQUEST_URI']}");
+    exit();
+}
+
+// Process delete review
+if (isset($_POST['delete_review']) && $user_logged_in) {
+    $user_id = $_SESSION['user_id'];
+    $review_id = isset($_POST['review_id']) ? intval($_POST['review_id']) : 0;
+
+    // Delete review from database
+    $delete_review_query = "DELETE FROM reviews WHERE review_id = ? AND user_id = ?";
+    $delete_review_stmt = $conn->prepare($delete_review_query);
+    $delete_review_stmt->bind_param("ii", $review_id, $user_id);
+    $delete_review_stmt->execute();
+    $delete_review_stmt->close();
+
+    // Redirect to prevent form resubmission on page refresh
+    header("Location: {$_SERVER['REQUEST_URI']}");
+    exit();
+}
 ?>
+
 
 <!-- ==================== THE BOOK SECTION ==================== -->
 <section class="thebook" id="thebook">
     <div class="b-container">
         <div class="image">
-            <img src="<?php echo $book['cover_image']; ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
+            <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
         </div>
         <div class="content">
             <h2><?php echo htmlspecialchars($book['title']); ?></h2>
             <h4><?php echo htmlspecialchars($book['author_name']); ?></h4>
             <div class="total-rating">
                 <?php
-                // Menampilkan bintang sesuai dengan rata-rata rating
+                $full_stars = floor($average_rating);
+                $half_star = ceil($average_rating - $full_stars);
+                $empty_stars = 5 - $full_stars - $half_star;
+                
                 for ($i = 0; $i < $full_stars; $i++) {
                     echo '<i class="bx bxs-star"></i>';
                 }
@@ -138,8 +169,6 @@ $formatted_rating = number_format($average_rating, 1);
     </div>
 </section>
 
-
-
 <!-- ==================== REVIEW SECTION ==================== -->
 <section class="review" id="review">
     <div class="comments">
@@ -180,7 +209,7 @@ $formatted_rating = number_format($average_rating, 1);
             if (count($reviews) > 0) {
                 foreach ($reviews as $row) {
                     ?>
-                    <div class="review-box">
+                    <div class="review-box" id="review-box-<?php echo $row['review_id']; ?>">
                         <div class="review-header">
                             <h5><?php echo htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?></h5>
                             <p>
@@ -189,10 +218,13 @@ $formatted_rating = number_format($average_rating, 1);
                                     <button class="more-options" id="more-options-<?php echo $row['review_id']; ?>">&#10247;</button> 
                                 <?php endif; ?>
                             </p>
-                            <div class="more-options-popup" id="more-options-popup-<?php echo $row['review_id']; ?>">
-                                <a href="#">Edit</a>
-                                <a href="#">Delete</a>
-                            </div> 
+                            <div class="more-options-popup" id="more-options-popup-<?php echo $row['review_id']; ?>" style="display: none;">
+                                <button class="edit-del-btn edit-review" data-review-id="<?php echo $row['review_id']; ?>">Edit</button>
+                                <form action="" method="post" style="display:inline;">
+                                    <input type="hidden" name="review_id" value="<?php echo $row['review_id']; ?>">
+                                    <button type="submit" name="delete_review" class="edit-del-btn">Delete</button>
+                                </form>
+                            </div>
                         </div>        
                         <div class="star-rating">
                             <?php
@@ -208,6 +240,31 @@ $formatted_rating = number_format($average_rating, 1);
                         </div>
                         <p><?php echo htmlspecialchars($row['review_text']); ?></p>
                     </div>
+
+                    <!-- Edit review form -->
+                    <div class="edit-review-box write-box" id="edit-review-box-<?php echo $row['review_id']; ?>" style="display:none;">
+                        <h4>Edit Review</h4>
+                        <form action="" method="post">
+                            <textarea name="edit_review_text" placeholder="Edit your review here..." oninput="autoResize(this)"><?php echo htmlspecialchars($row['review_text']); ?></textarea>
+                            <div class="rating-and-submit">
+                                <div class="star-rating">
+                                    <?php
+                                    // Loop to generate star rating inputs
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        $selected = ($i == $row['rating']) ? 'selected' : ''; // Check if this star is selected
+                                        echo '<span class="star ' . $selected . '" data-review-id="' . $row['review_id'] . '" data-value="' . $i . '">&#9733;</span>';
+                                    }
+                                    ?>
+                                </div>
+                                <input type="hidden" name="edit_rating" id="edit-rating-<?php echo $row['review_id']; ?>" value="<?php echo $row['rating']; ?>">
+                                <input type="hidden" name="review_id" value="<?php echo $row['review_id']; ?>">
+                                <button type="submit" name="update_review" class="submit-btn">Update</button>
+                                <button type="button" class="cancel-btn" data-review-id="<?php echo $row['review_id']; ?>">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+
                     <?php
                 }
             } else {
@@ -219,42 +276,7 @@ $formatted_rating = number_format($average_rating, 1);
 </section>
 
 
-<script>
-    const stars = document.querySelectorAll('.star');
-    const ratingInput = document.getElementById('rating');
-    stars.forEach(star => {
-        star.addEventListener('click', function() {
-            const value = parseInt(this.getAttribute('data-value'));
-            ratingInput.value = value;
-        });
-    });
-
-
-    document.addEventListener("DOMContentLoaded", function() {
-    var moreOptionsBtns = document.querySelectorAll(".more-options");
-
-    moreOptionsBtns.forEach(function(btn) {
-        btn.addEventListener("click", function(event) {
-            event.stopPropagation(); // Prevents the event from bubbling up
-            var reviewId = this.id.split('-')[2]; // Get the review ID from the button ID
-            var popup = document.getElementById('more-options-popup-' + reviewId);
-            togglePopup(popup);
-        });
-    });
-
-    // Function to toggle the visibility of the popup
-    function togglePopup(popup) {
-        var popups = document.querySelectorAll(".more-options-popup");
-        popups.forEach(function(popup) {
-            popup.style.display = 'none';
-        });
-        popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
-    }
-    });
-</script>
-
-
 <?php
-    include 'footer.php';
-    $conn->close();
+include 'footer.php';
+$conn->close();
 ?>

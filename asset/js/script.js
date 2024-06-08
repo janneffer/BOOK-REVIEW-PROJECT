@@ -38,9 +38,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// ==================== STAR RATING - REVIEW HTML ====================
+// ==================== LOGIN - REGISTER ====================
+document.addEventListener("DOMContentLoaded", function() {
+    const loginLink = document.getElementById("login-link");
+    const registerLink = document.getElementById("register-link");
+    const loginForm = document.querySelector(".form-box.login");
+    const registerForm = document.querySelector(".form-box.register");
 
+    // Sembunyikan form box register saat halaman dimuat
+    registerForm.style.display = "none";
+
+    // Tambahkan event listener pada link "Register" pada form box login
+    registerLink.addEventListener("click", function(event) {
+        event.preventDefault(); // Untuk mencegah perubahan URL saat link diklik
+        loginForm.style.display = "none"; // Sembunyikan form box login
+        registerForm.style.display = "block"; // Tampilkan form box register
+    });
+
+    // Tambahkan event listener pada link "Login" pada form box register (opsional)
+    loginLink.addEventListener("click", function(event) {
+        event.preventDefault(); // Untuk mencegah perubahan URL saat link diklik
+        registerForm.style.display = "none"; // Sembunyikan form box register
+        loginForm.style.display = "block"; // Tampilkan form box login
+    });
+});
+
+
+// ==================== BOOKREVIEW PAGE ====================
+// ==================== Star Rating, Popup, Edit Button, and Cancel Button ====================
 document.addEventListener('DOMContentLoaded', () => {
+    // Star rating for book review page
     const stars = document.querySelectorAll('.star-rating .star');
     let lastSelectedIndex = null; // Menyimpan indeks bintang terakhir yang dipilih
 
@@ -80,70 +107,80 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-});
 
+    // Star rating for new review and edit review
+    const starRatingContainers = document.querySelectorAll('.write-box, .edit-review-box');
+    starRatingContainers.forEach(container => {
+        container.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const reviewId = this.getAttribute('data-review-id');
+                const value = parseInt(this.getAttribute('data-value'));
 
-// ==================== LOGIN - REGISTER ====================
-document.addEventListener("DOMContentLoaded", function() {
-    const loginLink = document.getElementById("login-link");
-    const registerLink = document.getElementById("register-link");
-    const loginForm = document.querySelector(".form-box.login");
-    const registerForm = document.querySelector(".form-box.register");
+                // Jika id review tidak ada, tandai bintang untuk ulasan baru, jika ada, tandai untuk ulasan yang diedit
+                const ratingElement = reviewId ? document.getElementById('edit-rating-' + reviewId) : document.getElementById('rating');
+                ratingElement.value = value;
 
-    // Sembunyikan form box register saat halaman dimuat
-    registerForm.style.display = "none";
-
-    // Tambahkan event listener pada link "Register" pada form box login
-    registerLink.addEventListener("click", function(event) {
-        event.preventDefault(); // Untuk mencegah perubahan URL saat link diklik
-        loginForm.style.display = "none"; // Sembunyikan form box login
-        registerForm.style.display = "block"; // Tampilkan form box register
-    });
-
-    // Tambahkan event listener pada link "Login" pada form box register (opsional)
-    loginLink.addEventListener("click", function(event) {
-        event.preventDefault(); // Untuk mencegah perubahan URL saat link diklik
-        registerForm.style.display = "none"; // Sembunyikan form box register
-        loginForm.style.display = "block"; // Tampilkan form box login
-    });
-});
-
-
-
-// ==================== MORE OPTIONS - REVIEW HTML ====================
-document.addEventListener("DOMContentLoaded", function() {
-    var moreOptionsBtns = document.querySelectorAll(".more-options");
-    var popups = document.querySelectorAll(".more-options-popup");
-
-    moreOptionsBtns.forEach(function(btn, index) {
-        btn.addEventListener("click", function(event) {
-            event.stopPropagation(); // Prevents the event from bubbling up
-            togglePopup(index);
+                // Update star colors
+                updateStarRating(this.parentElement, value);
+            });
         });
     });
 
-    // Close popup when clicking outside of it
-    window.addEventListener("click", function(event) {
-        popups.forEach(function(popup) {
-            if (!popup.contains(event.target)) {
-                popup.style.display = 'none';
-            }
+    // Toggle more options popup
+    const moreOptionsButtons = document.querySelectorAll(".more-options");
+    moreOptionsButtons.forEach(btn => {
+        btn.addEventListener("click", function(event) {
+            event.stopPropagation();
+            const reviewId = this.id.split('-')[2];
+            const popup = document.getElementById('more-options-popup-' + reviewId);
+            togglePopup(popup);
+        });
+    });
+
+    // Close more options popup when clicking outside
+    document.addEventListener("click", function(event) {
+        document.querySelectorAll(".more-options-popup").forEach(popup => {
+            popup.style.display = 'none';
         });
     });
 
     // Function to toggle the visibility of the popup
-    function togglePopup(index) {
-        popups.forEach(function(popup, i) {
-            if (i === index) {
-                popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
-            } else {
-                popup.style.display = 'none';
-            }
+    function togglePopup(popup) {
+        document.querySelectorAll(".more-options-popup").forEach(p => {
+            p.style.display = 'none';
         });
+        popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Event listener for edit and cancel buttons
+    const editAndCancelButtons = document.querySelectorAll(".edit-review, .cancel-btn");
+    editAndCancelButtons.forEach(btn => {
+        btn.addEventListener("click", function(event) {
+            event.preventDefault();
+            const reviewId = this.getAttribute('data-review-id');
+            const reviewBox = document.getElementById('edit-review-box-' + reviewId);
+            reviewBox.style.display = reviewBox.style.display === 'block' ? 'none' : 'block';
+
+            // Hide other popups
+            document.querySelectorAll(".more-options-popup").forEach(popup => {
+                popup.style.display = 'none';
+            });
+        });
+    });
+
+    // Auto resize textarea
+    const MAX_HEIGHT = 250; // Maximum height for the textarea in pixels
+
+    document.querySelectorAll('textarea').forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            autoResize(this);
+        });
+    });
+
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        const newHeight = Math.min(textarea.scrollHeight, MAX_HEIGHT);
+        textarea.style.height = newHeight + 'px';
+        textarea.style.overflowY = (textarea.scrollHeight > MAX_HEIGHT) ? 'scroll' : 'hidden';
     }
 });
-
-
-
-
-

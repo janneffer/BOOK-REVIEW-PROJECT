@@ -416,45 +416,19 @@ header {
 .contact {
     display: flex;
     height: auto;
-	padding: 1.5rem;
+	/* padding: 1rem; */
     flex-direction: column;
     align-items: center;
-    background-color: var(--lightest-color);
-}
-
-.contact h5 {
-    text-align: center;
-    text-transform: uppercase;
-    font-size: var(--h5-font-size);
-    color: var(--darkest-color);
+    background-color: transparent;
 }
 
 .contact p {
     text-align: center;
     font-size: var(--p-font-size);
-    color: var(--darkest-color);
-}
-
-.social a{
-    font-size: var(--h2-font-size);
-    margin: 1rem;
-}
-
-.social a .bx {
-    padding: 0.5rem;
-    border-radius: 50%;
-    margin-top: 1.5rem;
-    margin-bottom: 1.8rem;
     color: black;
-    background: var(--grey-color);
-}
-
-.social a .bx:hover {
-    background: var(--main-color);
 }
 
 /* ==================== CONTACT SECTION STOP ==================== */
-
 
 
 /* ====================================================== */
@@ -1035,6 +1009,10 @@ header {
     flex-direction: column;
 }
 
+.edit-review-box.write-box {
+    margin-bottom: 30px;
+}
+
 .comments .write-box h4 {
     font-size: 1.2rem;
     text-transform: uppercase;
@@ -1080,7 +1058,7 @@ header {
     border: 2px solid black;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem; /* Sesuaikan ukuran font dengan kebutuhan */
+    font-size: var(--h5-font-size); /* Sesuaikan ukuran font dengan kebutuhan */
     font-weight: 600;
     text-transform: uppercase;
     background: transparent;
@@ -1093,8 +1071,27 @@ header {
     color: white;
 }
 
+.edit-review-box .cancel-btn {
+    padding: 5px 40px;
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: var(--h5-font-size); 
+    font-weight: 600;
+    text-transform: uppercase;
+    background: transparent;
+    color: black;
+    transition: .5s;
+    margin-left: 10px;
+}
+
+.edit-review-box .cancel-btn:hover {
+    background: black;
+    color: white;
+}
+
 .comments .posted h4 {
-    font-size: 1.2rem; /* Sesuaikan ukuran font dengan kebutuhan */
+    font-size: var(--h4-font-size); 
     margin-bottom: 25px;
 }
 
@@ -1133,7 +1130,7 @@ header {
     color: gold;
 }
 
-.review-box .review-header .more-options {
+.review-box .more-options {
     background: none;
     border: none;
     font-size: 1rem; 
@@ -1146,7 +1143,6 @@ header {
     display: none;
     position: absolute;
     background-color: white;
-    min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     border-radius: 5px;
     z-index: 1;
@@ -1154,18 +1150,23 @@ header {
     right: 40px;
 }
 
-.more-options-popup a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
+.edit-del-btn {
     display: block;
-    font-size: var(--p-font-size);
+    width: 100%; 
+    padding: 5px 40px;
+    border: none;
+    cursor: pointer;
+    font-size: var(--h5-font-size); 
+    font-weight: 600;
+    text-transform: uppercase;
+    background: transparent;
+    color: black;
+    transition: .5s;
 }
 
-.more-options-popup a:hover {
+.edit-del-btn:hover {
     background-color: #f1f1f1;
 }
-
 
 
 /* ==================== REVIEW SECTION STOP ==================== */
