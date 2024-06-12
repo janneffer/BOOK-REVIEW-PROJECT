@@ -1,6 +1,6 @@
-# BOOK-REVIEW-PROJECT
+# ReadRater (BOOK REVIEW WEBSITE FINAL PROJECT
 
-Tugas Project Mata Kuliah Pemrograman Web 
+Final Project Mata Kuliah Pemrograman Web Kelas B 
 
 Anggota Kelompok:
 1. Janneffer Pandelaki (220211060085)
