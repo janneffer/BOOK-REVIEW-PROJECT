@@ -1,4 +1,4 @@
-# ReadRater (BOOK REVIEW WEBSITE FINAL PROJECT
+# ReadRater (BOOK REVIEW WEBSITE FINAL PROJECT)
 
 Final Project Mata Kuliah Pemrograman Web Kelas B 
 
